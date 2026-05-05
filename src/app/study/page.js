@@ -1,10 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, RotateCcw, Home, Layout, Shuffle, Zap } from "lucide-react";
+import { ChevronLeft, ChevronRight, RotateCcw, Home, Layout, Shuffle } from "lucide-react";
 import Link from "next/link";
 
-// EXACT FLOATING CARDS LOGIC FROM HOWITWORKS
 const FloatingCards = () => {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => { setMounted(true); }, []);
@@ -118,30 +117,27 @@ export default function StudyPage() {
   const progress = ((currentIndex + 1) / cards.length) * 100;
 
   return (
-    <main className="min-h-[110vh] bg-gray-50 flex flex-col items-center py-8 md:py-12 px-4 md:px-6 font-poppins relative overflow-hidden" style={{ overflowAnchor: 'none' }}>
-      
+    <main className="min-h-screen bg-gray-50 flex flex-col items-center py-8 md:py-12 px-4 md:px-6 font-poppins relative overflow-hidden">
       <FloatingCards />
 
-      {/* Main Study Content wrapper with z-index */}
       <div className="w-full flex flex-col items-center relative z-10">
-        
         {/* Progress Header */}
-        <div className="max-w-[320px] w-full mb-8 md:mb-12">
+        <div className="max-w-[320px] w-full mb-8">
             <div className="flex justify-between items-end mb-4">
-            <div>
-                <span className="text-blue-600 font-black uppercase tracking-widest text-[10px]">Study Area</span>
-                <h2 className="text-xl font-black text-gray-900">Training</h2>
-            </div>
-            <span className="font-black text-gray-400 text-sm">
-                {currentIndex + 1} <span className="text-gray-300">/</span> {cards.length}
-            </span>
+              <div>
+                  <span className="text-blue-600 font-black uppercase tracking-widest text-[10px]">Study Area</span>
+                  <h2 className="text-xl font-black text-gray-900">Training</h2>
+              </div>
+              <span className="font-black text-gray-400 text-sm">
+                  {currentIndex + 1} <span className="text-gray-300">/</span> {cards.length}
+              </span>
             </div>
             <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-            <motion.div 
-                className="h-full bg-blue-600" 
-                initial={{ width: 0 }} 
-                animate={{ width: `${progress}%` }}
-            />
+              <motion.div 
+                  className="h-full bg-blue-600" 
+                  initial={{ width: 0 }} 
+                  animate={{ width: `${progress}%` }}
+              />
             </div>
         </div>
 
@@ -162,25 +158,37 @@ export default function StudyPage() {
                     isFlipped ? "[transform:rotateY(180deg)]" : ""
                 }`}
                 >
-                <div className="absolute inset-0 bg-white border border-gray-100 rounded-[24px] shadow-xl flex flex-col p-8 [backface-visibility:hidden] overflow-hidden">
+                {/* Front */}
+                <div className="absolute inset-0 bg-white border border-gray-100 rounded-[24px] shadow-xl flex flex-col [backface-visibility:hidden] overflow-hidden">
                     <div className="absolute left-6 top-0 bottom-0 w-[1px] bg-red-100/50" />
-                    <span className="text-blue-500 font-black text-[10px] uppercase tracking-[0.3em] mb-4 relative z-10">Question</span>
-                    <div className="flex-grow flex items-center justify-center overflow-y-auto custom-scrollbar relative z-10">
-                        <h3 className="text-2xl font-bold text-gray-800 leading-tight text-center break-words w-full">
+                    <div className="p-6 pb-2 relative z-10">
+                      <span className="text-blue-500 font-black text-[10px] uppercase tracking-[0.3em]">Question</span>
+                    </div>
+                    {/* FIXED: items-start allows scrolling to reach the very top */}
+                    <div className="flex-grow flex items-start justify-center pl-8 pr-4 mr-1 py-4 overflow-y-auto custom-scrollbar relative z-10">
+                        <h3 className="text-2xl font-bold text-gray-800 leading-tight text-center break-words w-full pt-2">
                         {cards[currentIndex]?.question}
                         </h3>
                     </div>
-                    <p className="text-center text-gray-300 text-[10px] font-black uppercase tracking-widest mt-4 animate-pulse">Click to flip</p>
+                    <div className="p-6 pt-2">
+                      <p className="text-center text-gray-300 text-[10px] font-black uppercase tracking-widest animate-pulse">Click to flip</p>
+                    </div>
                 </div>
 
-                <div className="absolute inset-0 bg-gray-900 text-white rounded-[24px] shadow-xl flex flex-col p-8 [transform:rotateY(180deg)] [backface-visibility:hidden] overflow-hidden">
-                    <span className="text-gray-500 font-black text-[10px] uppercase tracking-[0.3em] mb-4">Answer</span>
-                    <div className="flex-grow flex items-center justify-center overflow-y-auto custom-scrollbar">
-                    <p className="text-xl font-medium leading-relaxed text-center break-words w-full">
-                        {cards[currentIndex]?.answer}
-                    </p>
+                {/* Back */}
+                <div className="absolute inset-0 bg-gray-900 text-white rounded-[24px] shadow-xl flex flex-col [transform:rotateY(180deg)] [backface-visibility:hidden] overflow-hidden">
+                    <div className="p-6 pb-2">
+                      <span className="text-gray-500 font-black text-[10px] uppercase tracking-[0.3em]">Answer</span>
                     </div>
-                    <p className="text-center text-gray-600 text-[10px] font-black uppercase tracking-widest mt-4">Click to flip</p>
+                    {/* FIXED: items-start allows scrolling to reach the very top */}
+                    <div className="flex-grow flex items-start justify-center pl-8 pr-4 mr-1 py-4 overflow-y-auto custom-scrollbar">
+                      <p className="text-xl font-medium leading-relaxed text-center break-words w-full pt-2">
+                          {cards[currentIndex]?.answer}
+                      </p>
+                    </div>
+                    <div className="p-6 pt-2">
+                      <p className="text-center text-gray-600 text-[10px] font-black uppercase tracking-widest">Click to flip</p>
+                    </div>
                 </div>
                 </div>
             </motion.div>
@@ -188,14 +196,14 @@ export default function StudyPage() {
         </div>
 
         {/* Controls */}
-        <div className="mt-8 md:mt-12 flex items-center gap-3 md:gap-4">
+        <div className="mt-8 flex items-center gap-4">
             <motion.button 
             type="button"
             whileHover={currentIndex !== 0 ? { scale: 1.1 } : {}}
             whileTap={currentIndex !== 0 ? { scale: 0.9 } : {}}
             onClick={handleBack}
             disabled={currentIndex === 0}
-            className={`p-3 md:p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+            className={`p-4 rounded-2xl border-2 transition-all cursor-pointer ${
                 currentIndex === 0 
                 ? "opacity-0 cursor-default" 
                 : "border-gray-200 text-gray-400 hover:text-blue-500 hover:border-blue-500 shadow-sm bg-white shadow-lg shadow-gray-200"
@@ -209,7 +217,7 @@ export default function StudyPage() {
             whileHover={{ scale: 1.1, rotate: -10 }}
             whileTap={{ scale: 0.9, rotate: 90 }}
             onClick={handleShuffle}
-            className="p-3 md:p-4 rounded-2xl border-2 border-gray-200 text-gray-400 hover:text-indigo-500 hover:border-indigo-500 shadow-sm bg-white shadow-lg shadow-gray-200 cursor-pointer transition-colors"
+            className="p-4 rounded-2xl border-2 border-gray-200 text-gray-400 hover:text-indigo-500 hover:border-indigo-500 shadow-sm bg-white shadow-lg shadow-gray-200 cursor-pointer transition-colors"
             title="Shuffle Deck"
             >
             <Shuffle size={20} />
@@ -220,7 +228,7 @@ export default function StudyPage() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleNext}
-            className="bg-gray-900 text-white px-6 md:px-8 py-3 md:py-4 rounded-2xl font-black text-xs md:text-sm uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl flex items-center gap-2 md:gap-3 cursor-pointer shadow-blue-200"
+            className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl flex items-center gap-3 cursor-pointer shadow-blue-200"
             >
             {currentIndex === cards.length - 1 ? "Finish" : "Next"}
             <ChevronRight size={18} />
@@ -229,10 +237,10 @@ export default function StudyPage() {
       </div>
 
       <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; } 
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: rgba(0, 0, 0, 0.1);
+          background-color: rgba(156, 163, 175, 0.4); 
           border-radius: 10px;
         }
       `}</style>
