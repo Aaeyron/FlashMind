@@ -121,7 +121,6 @@ export default function StudyPage() {
       <FloatingCards />
 
       <div className="w-full flex flex-col items-center relative z-10">
-        {/* Progress Header */}
         <div className="max-w-[320px] w-full mb-8">
             <div className="flex justify-between items-end mb-4">
               <div>
@@ -140,8 +139,8 @@ export default function StudyPage() {
               />
             </div>
         </div>
-
-        {/* The Study Card */}
+          
+          {/* The Study Card */}
         <div className="relative w-full max-w-[320px] h-[450px] [perspective:1000px]">
             <AnimatePresence mode="wait">
             <motion.div
@@ -159,12 +158,12 @@ export default function StudyPage() {
                 }`}
                 >
                 {/* Front */}
-                <div className="absolute inset-0 bg-white border border-gray-100 rounded-[24px] shadow-xl flex flex-col [backface-visibility:hidden] overflow-hidden">
+                <div className={`absolute inset-0 bg-white border border-gray-100 rounded-[24px] shadow-xl flex flex-col [backface-visibility:hidden] overflow-hidden ${isFlipped ? "pointer-events-none" : "pointer-events-auto"}`}>
                     <div className="absolute left-6 top-0 bottom-0 w-[1px] bg-red-100/50" />
                     <div className="p-6 pb-2 relative z-10">
                       <span className="text-blue-500 font-black text-[10px] uppercase tracking-[0.3em]">Question</span>
                     </div>
-                    {/* FIXED: items-start allows scrolling to reach the very top */}
+                    {/* FIXED: Removed stopPropagation so click triggers the flip */}
                     <div className="flex-grow flex items-start justify-center pl-8 pr-4 mr-1 py-4 overflow-y-auto custom-scrollbar relative z-10">
                         <h3 className="text-2xl font-bold text-gray-800 leading-tight text-center break-words w-full pt-2">
                         {cards[currentIndex]?.question}
@@ -176,12 +175,12 @@ export default function StudyPage() {
                 </div>
 
                 {/* Back */}
-                <div className="absolute inset-0 bg-gray-900 text-white rounded-[24px] shadow-xl flex flex-col [transform:rotateY(180deg)] [backface-visibility:hidden] overflow-hidden">
-                    <div className="p-6 pb-2">
+                <div className={`absolute inset-0 bg-gray-900 text-white rounded-[24px] shadow-xl flex flex-col [transform:rotateY(180deg)] [backface-visibility:hidden] overflow-hidden ${isFlipped ? "pointer-events-auto" : "pointer-events-none"}`}>
+                    <div className="p-6 pb-2 relative z-10">
                       <span className="text-gray-500 font-black text-[10px] uppercase tracking-[0.3em]">Answer</span>
                     </div>
-                    {/* FIXED: items-start allows scrolling to reach the very top */}
-                    <div className="flex-grow flex items-start justify-center pl-8 pr-4 mr-1 py-4 overflow-y-auto custom-scrollbar">
+                    {/* FIXED: Removed stopPropagation so click triggers the flip */}
+                    <div className="flex-grow flex items-start justify-center pl-8 pr-4 mr-1 py-4 overflow-y-auto custom-scrollbar relative z-10">
                       <p className="text-xl font-medium leading-relaxed text-center break-words w-full pt-2">
                           {cards[currentIndex]?.answer}
                       </p>
@@ -195,7 +194,6 @@ export default function StudyPage() {
             </AnimatePresence>
         </div>
 
-        {/* Controls */}
         <div className="mt-8 flex items-center gap-4">
             <motion.button 
             type="button"
