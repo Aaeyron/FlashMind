@@ -4,22 +4,48 @@ import React, { useState, useEffect } from "react";
 import { Users, Target, Heart, Rocket, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
-// Reusable Floating Background
+// Optimized Floating Background
 const FloatingCards = () => {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => { 
+    setMounted(true); 
+    // Check if device is mobile to match the smooth performance of other pages
+    setIsMobile(window.innerWidth < 768);
+  }, []);
+
   if (!mounted) return null;
 
-  const cards = Array.from({ length: 12 });
+  // Use 6 cards for mobile, 12 for desktop to keep the CPU cool
+  const count = isMobile ? 6 : 12;
+  const cards = Array.from({ length: count });
+
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
       {cards.map((_, i) => (
         <motion.div
           key={i}
           className="absolute w-20 h-28 md:w-28 md:h-36 bg-blue-400/20 border border-blue-400/30 rounded-xl shadow-lg"
-          initial={{ top: "110%", left: `${(i * 9)}%`, rotate: Math.random() * 45 }}
-          animate={{ top: "-20%", rotate: i % 2 === 0 ? 360 : -360 }}
-          transition={{ duration: 10 + Math.random() * 10, repeat: Infinity, ease: "linear", delay: i * 1.2 }}
+          style={{ 
+            willChange: "transform", // This is the secret sauce for smoothness
+          }}
+          initial={{ 
+            top: "110%", 
+            left: `${isMobile ? (i * 18) : (i * 9)}%`, 
+            rotate: Math.random() * 45 
+          }}
+          animate={{ 
+            top: "-20%", 
+            // Simple sway for mobile, full spin for desktop
+            rotate: isMobile ? (i % 2 === 0 ? 25 : -25) : (i % 2 === 0 ? 360 : -360) 
+          }}
+          transition={{ 
+            duration: isMobile ? 15 + Math.random() * 10 : 10 + Math.random() * 10, 
+            repeat: Infinity, 
+            ease: "linear", 
+            delay: i * 1.2 
+          }}
         />
       ))}
     </div>
@@ -82,12 +108,8 @@ export default function About() {
           viewport={{ once: true }}
           className="w-full h-64 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-[32px] mb-20 shadow-xl flex items-center justify-center p-8 text-center relative overflow-hidden group cursor-default transition-all duration-300"
         >
-          {/* Animated Background Decor */}
-          <motion.div 
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"
-          />
+          {/* Static Background Decor for mobile performance */}
+          <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
 
           <div className="text-white relative z-10">
             <motion.div

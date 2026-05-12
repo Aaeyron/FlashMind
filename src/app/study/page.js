@@ -4,21 +4,47 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, RotateCcw, Home, Layout, Shuffle } from "lucide-react";
 import Link from "next/link";
 
+// REWORKED BACKGROUND LOGIC (Optimized for smoothness)
 const FloatingCards = () => {
   const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => { setMounted(true); }, []);
+  const [isMobile, setIsMobile] = useState(false);
+
+  React.useEffect(() => { 
+    setMounted(true); 
+    setIsMobile(window.innerWidth < 768);
+  }, []);
+
   if (!mounted) return null;
 
-  const cards = Array.from({ length: 12 });
+  // Use 6 cards for mobile, 12 for desktop to keep it buttery smooth
+  const count = isMobile ? 6 : 12;
+  const cards = Array.from({ length: count });
+
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
       {cards.map((_, i) => (
         <motion.div
           key={i}
           className="absolute w-20 h-28 md:w-28 md:h-36 bg-blue-400/20 border border-blue-400/30 rounded-xl shadow-lg"
-          initial={{ top: "110%", left: `${(i * 9)}%`, rotate: Math.random() * 45 }}
-          animate={{ top: "-20%", rotate: i % 2 === 0 ? 360 : -360 }}
-          transition={{ duration: 10 + Math.random() * 10, repeat: Infinity, ease: "linear", delay: i * 1.2 }}
+          style={{ 
+            willChange: "transform", // Hardware acceleration for phones
+          }}
+          initial={{ 
+            top: "110%", 
+            left: `${isMobile ? (i * 18) : (i * 9)}%`, 
+            rotate: Math.random() * 45 
+          }}
+          animate={{ 
+            top: "-20%", 
+            // Sway for mobile, full spin for desktop
+            rotate: isMobile ? (i % 2 === 0 ? 25 : -25) : (i % 2 === 0 ? 360 : -360) 
+          }}
+          transition={{ 
+            duration: isMobile ? 15 + Math.random() * 10 : 10 + Math.random() * 10, 
+            repeat: Infinity, 
+            ease: "linear", 
+            delay: i * 1.2 
+          }}
         />
       ))}
     </div>
@@ -140,7 +166,6 @@ export default function StudyPage() {
             </div>
         </div>
           
-          {/* The Study Card */}
         <div className="relative w-full max-w-[320px] h-[450px] [perspective:1000px]">
             <AnimatePresence mode="wait">
             <motion.div
@@ -157,13 +182,11 @@ export default function StudyPage() {
                     isFlipped ? "[transform:rotateY(180deg)]" : ""
                 }`}
                 >
-                {/* Front */}
                 <div className={`absolute inset-0 bg-white border border-gray-100 rounded-[24px] shadow-xl flex flex-col [backface-visibility:hidden] overflow-hidden ${isFlipped ? "pointer-events-none" : "pointer-events-auto"}`}>
                     <div className="absolute left-6 top-0 bottom-0 w-[1px] bg-red-100/50" />
                     <div className="p-6 pb-2 relative z-10">
                       <span className="text-blue-500 font-black text-[10px] uppercase tracking-[0.3em]">Question</span>
                     </div>
-                    {/* FIXED: Removed stopPropagation so click triggers the flip */}
                     <div className="flex-grow flex items-start justify-center pl-8 pr-4 mr-1 py-4 overflow-y-auto custom-scrollbar relative z-10">
                         <h3 className="text-2xl font-bold text-gray-800 leading-tight text-center break-words w-full pt-2">
                         {cards[currentIndex]?.question}
@@ -174,12 +197,10 @@ export default function StudyPage() {
                     </div>
                 </div>
 
-                {/* Back */}
                 <div className={`absolute inset-0 bg-gray-900 text-white rounded-[24px] shadow-xl flex flex-col [transform:rotateY(180deg)] [backface-visibility:hidden] overflow-hidden ${isFlipped ? "pointer-events-auto" : "pointer-events-none"}`}>
                     <div className="p-6 pb-2 relative z-10">
                       <span className="text-gray-500 font-black text-[10px] uppercase tracking-[0.3em]">Answer</span>
                     </div>
-                    {/* FIXED: Removed stopPropagation so click triggers the flip */}
                     <div className="flex-grow flex items-start justify-center pl-8 pr-4 mr-1 py-4 overflow-y-auto custom-scrollbar relative z-10">
                       <p className="text-xl font-medium leading-relaxed text-center break-words w-full pt-2">
                           {cards[currentIndex]?.answer}

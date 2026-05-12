@@ -4,16 +4,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, ArrowLeft, Save, AlertCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+// REWORKED BACKGROUND LOGIC (Now Smooth on Mobile)
 const FloatingBackground = () => {
   const [mounted, setMounted] = React.useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   
   React.useEffect(() => { 
     setMounted(true); 
+    // Check device for optimization
+    setIsMobile(window.innerWidth < 768);
   }, []);
 
   if (!mounted) return null;
 
-  const cards = Array.from({ length: 12 });
+  // 6 cards for mobile, 12 for desktop
+  const count = isMobile ? 6 : 12;
+  const cards = Array.from({ length: count });
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
@@ -21,17 +27,21 @@ const FloatingBackground = () => {
         <motion.div
           key={i}
           className="absolute w-20 h-28 md:w-28 md:h-36 bg-blue-400/20 border border-blue-400/30 rounded-xl shadow-lg"
+          style={{ 
+            willChange: "transform", // Forces GPU acceleration
+          }}
           initial={{ 
             top: "110%", 
-            left: `${(i * 9)}%`, 
+            left: `${isMobile ? (i * 18) : (i * 9)}%`, 
             rotate: Math.random() * 45 
           }}
           animate={{
             top: "-20%",
-            rotate: i % 2 === 0 ? 360 : -360,
+            // Sway for mobile, full spin for PC
+            rotate: isMobile ? (i % 2 === 0 ? 25 : -25) : (i % 2 === 0 ? 360 : -360),
           }}
           transition={{
-            duration: 10 + Math.random() * 10,
+            duration: isMobile ? 15 + Math.random() * 10 : 10 + Math.random() * 10,
             repeat: Infinity,
             ease: "linear",
             delay: i * 1.2,
@@ -97,7 +107,6 @@ function CardForm() {
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      /* RESPONSIVE FIX: max-w-md on desktop, but takes full width on mobile with reduced padding */
       className="max-w-md w-full bg-white/80 backdrop-blur-xl p-6 md:p-10 rounded-[32px] md:rounded-[40px] border border-gray-100 shadow-2xl relative z-10"
     >
       <header className="flex items-center justify-between mb-8 md:mb-10">
@@ -134,7 +143,6 @@ function CardForm() {
           <textarea 
             value={question} 
             onChange={handleInputChange(setQuestion)}
-            /* RESPONSIVE FIX: Padding and font size adjusted for small screens */
             className={`w-full p-4 md:p-5 text-sm md:text-base bg-gray-50 border-2 rounded-2xl md:rounded-3xl transition-all outline-none resize-none font-medium text-gray-800 ${
               error && !question ? 'border-red-200 bg-red-50/30' : 'border-transparent focus:border-blue-500 focus:bg-white'
             }`}
@@ -154,7 +162,6 @@ function CardForm() {
           />
         </div>
 
-        {/* RESPONSIVE FIX: Button padding and text size */}
         <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm md:text-base font-black py-4 md:py-5 rounded-2xl md:rounded-[24px] shadow-xl shadow-blue-200 transition-all flex items-center justify-center gap-2 transform active:scale-95 cursor-pointer">
           {editId ? "Save Changes" : "Add to Deck"} 
           {editId ? <Save size={18} /> : <Plus size={18} />}
