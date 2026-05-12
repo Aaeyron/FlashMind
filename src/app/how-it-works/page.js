@@ -4,22 +4,46 @@ import React from "react";
 import { Copy, Layers, GraduationCap, CheckCircle2, Zap, Brain, ShieldCheck, Clock, BookOpen, Fingerprint, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
-// Background effect logic remains exactly the same
 const FloatingCards = () => {
   const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => { setMounted(true); }, []);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => { 
+    setMounted(true); 
+    setIsMobile(window.innerWidth < 768);
+  }, []);
+
   if (!mounted) return null;
 
-  const cards = Array.from({ length: 12 });
+  // Use 6 cards for mobile, 12 for desktop to prevent CPU lag
+  const count = isMobile ? 6 : 12;
+  const cards = Array.from({ length: count });
+
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
       {cards.map((_, i) => (
         <motion.div
           key={i}
           className="absolute w-20 h-28 md:w-28 md:h-36 bg-blue-400/20 border border-blue-400/30 rounded-xl shadow-lg"
-          initial={{ top: "110%", left: `${(i * 9)}%`, rotate: Math.random() * 45 }}
-          animate={{ top: "-20%", rotate: i % 2 === 0 ? 360 : -360 }}
-          transition={{ duration: 10 + Math.random() * 10, repeat: Infinity, ease: "linear", delay: i * 1.2 }}
+          style={{ 
+            willChange: "transform", // Forces GPU acceleration
+          }}
+          initial={{ 
+            top: "110%", 
+            left: `${isMobile ? (i * 18) : (i * 9)}%`, 
+            rotate: Math.random() * 45 
+          }}
+          animate={{ 
+            top: "-20%", 
+            // Simple tilt for mobile, full spin for PC
+            rotate: isMobile ? (i % 2 === 0 ? 20 : -20) : (i % 2 === 0 ? 360 : -360) 
+          }}
+          transition={{ 
+            duration: isMobile ? 15 + Math.random() * 10 : 10 + Math.random() * 10, 
+            repeat: Infinity, 
+            ease: "linear", 
+            delay: i * 1.2 
+          }}
         />
       ))}
     </div>
